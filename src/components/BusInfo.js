@@ -26,6 +26,7 @@ const BusInfo = ({ isBookmarked, num, directionDescription, numColor, processedN
         <View style={{ flex: 1 }}>
           {processedNextBusInfos.map((info, index) => (
             <NextBusInfo
+              NEWCOLOR={NEWCOLOR}
               key={`next-bus-info-${index}`}
               hasInfo={info.hasInfo}
               remainedTimeText={info.remainedTimeText}

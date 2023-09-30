@@ -3,8 +3,7 @@ import { Text, View } from 'react-native';
 import { useTheme } from '../use-theme';
 import { COLOR } from '../color';
 
-const NextBusInfo = ({ hasInfo, remainedTimeText, numOfRemainedStops, seatStatusText }) => {
-  const { NEWCOLOR } = useTheme();
+const NextBusInfo = ({ hasInfo, remainedTimeText, numOfRemainedStops, seatStatusText, NEWCOLOR }) => {
   if (!hasInfo) return <Text style={{ color: NEWCOLOR.GRAY_2_GRAY_3 }}>도착 정보 없음</Text>;
 
   return (
