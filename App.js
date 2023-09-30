@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import BusInfo from './src/components/BusInfo';
 import { COLOR } from './src/color';
 import { busStop, getBusNumColorByType, getRemainedTimeText, getSeatStatusText, getSections } from './src/data';
@@ -10,6 +10,7 @@ import BookmarkButton from './src/components/BookmarkButton';
 export default function App() {
   const sections = getSections(busStop.buses);
   const [now, setNow] = useState(dayjs());
+  const [refreshing, setRefreshing] = useState(false);
 
   const ListHeaderIcons = ({ name, size, color }) => {
     return (
@@ -19,27 +20,21 @@ export default function App() {
     );
   };
 
-  const onPressBusStopBookmark = () => {};
-
   const ListHeaderComponent = () => {
     return (
-      <SafeAreaView style={{ backgroundColor: COLOR.GRAY_3, height: 250 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <ListHeaderIcons name="arrow-left" size={24} color={COLOR.WHITE} />
-          <ListHeaderIcons name="home" size={20} color={COLOR.WHITE} />
-        </View>
-        <View style={{ justifyContent: 'center', alignItems: 'center', gap: 4 }}>
-          <Text style={{ color: COLOR.WHITE, fontSize: 13 }}>{busStop.id}</Text>
-          <Text style={{ color: COLOR.WHITE, fontSize: 20 }}>{busStop.name}</Text>
-          <Text style={{ color: COLOR.GRAY_1, fontSize: 14, marginBottom: 16 }}>{busStop.directionDescription}</Text>
-          <BookmarkButton
-            size={25}
-            isBookmarked={busStop.isBookmarked}
-            onPress={onPressBusStopBookmark}
-            style={{ borderWidth: 0.3, borderColor: COLOR.GRAY_1, padding: 5, borderRadius: '100%', marginBottom: 20 }}
-          />
-        </View>
-      </SafeAreaView>
+      <View
+        style={{ backgroundColor: COLOR.GRAY_3, height: 170, justifyContent: 'center', alignItems: 'center', gap: 4 }}
+      >
+        <Text style={{ color: COLOR.WHITE, fontSize: 13 }}>{busStop.id}</Text>
+        <Text style={{ color: COLOR.WHITE, fontSize: 20 }}>{busStop.name}</Text>
+        <Text style={{ color: COLOR.GRAY_1, fontSize: 14, marginBottom: 16 }}>{busStop.directionDescription}</Text>
+        <BookmarkButton
+          size={25}
+          isBookmarked={busStop.isBookmarked}
+          onPress={() => {}}
+          style={{ borderWidth: 0.3, borderColor: COLOR.GRAY_1, padding: 5, borderRadius: '100%' }}
+        />
+      </View>
     );
   };
 
@@ -95,26 +90,47 @@ export default function App() {
     );
   };
 
+  // 리스트 구분선
   const ItemSeparatorComponent = () => {
     return <View style={{ width: '100%', height: 1, backgroundColor: COLOR.GRAY_1 }} />;
   };
 
+  // 리스트 하단
   const ListFooterComponent = () => {
     return <View style={{ height: 30 }} />;
   };
+
+  // 화면 리프레시
+  const onRefresh = () => {
+    setRefreshing(true);
+  };
+
+  useEffect(() => {
+    if (refreshing) {
+      setNow(dayjs());
+      setRefreshing(false);
+    }
+  }, [refreshing]);
 
   // 1초마다 도착시간 리렌더링
   useEffect(() => {
     const interval = setInterval(() => {
       const newNow = dayjs();
       setNow(newNow);
-    }, 1000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <View style={styles.container}>
+      <View style={{ backgroundColor: COLOR.GRAY_3, width: '100%' }}>
+        <SafeAreaView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <ListHeaderIcons name="arrow-left" size={24} color={COLOR.WHITE} />
+          <ListHeaderIcons name="home" size={20} color={COLOR.WHITE} />
+        </SafeAreaView>
+        <View style={{ position: 'absolute', width: '100%', height: 600, backgroundColor: COLOR.GRAY_3, zIndex: -1 }} />
+      </View>
       <SectionList
         style={{ flex: 1, width: '100%' }}
         sections={sections} // data obj
@@ -123,6 +139,7 @@ export default function App() {
         ListHeaderComponent={ListHeaderComponent}
         ListFooterComponent={ListFooterComponent}
         ItemSeparatorComponent={ItemSeparatorComponent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
     </View>
   );
