@@ -1,16 +1,27 @@
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { RefreshControl, SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  RefreshControl,
+  SafeAreaView,
+  SectionList,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import BusInfo from './src/components/BusInfo';
-import { COLOR } from './src/color';
 import { busStop, getBusNumColorByType, getRemainedTimeText, getSeatStatusText, getSections } from './src/data';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import BookmarkButton from './src/components/BookmarkButton';
+import { useTheme } from './src/use-theme';
 
 export default function App() {
   const sections = getSections(busStop.buses);
   const [now, setNow] = useState(dayjs());
   const [refreshing, setRefreshing] = useState(false);
+
+  const { NEWCOLOR, isDark, toggleIsDark } = useTheme();
 
   const ListHeaderIcons = ({ name, size, color }) => {
     return (
@@ -23,17 +34,27 @@ export default function App() {
   const ListHeaderComponent = () => {
     return (
       <View
-        style={{ backgroundColor: COLOR.GRAY_3, height: 170, justifyContent: 'center', alignItems: 'center', gap: 4 }}
+        style={{
+          backgroundColor: NEWCOLOR.GRAY_3_GRAY_2,
+          height: 170,
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 4,
+        }}
       >
-        <Text style={{ color: COLOR.WHITE, fontSize: 13 }}>{busStop.id}</Text>
-        <Text style={{ color: COLOR.WHITE, fontSize: 20 }}>{busStop.name}</Text>
-        <Text style={{ color: COLOR.GRAY_1, fontSize: 14, marginBottom: 16 }}>{busStop.directionDescription}</Text>
+        <Text style={{ color: NEWCOLOR.WHITE_BLACK, fontSize: 13 }}>{busStop.id}</Text>
+        <Text style={{ color: NEWCOLOR.WHITE_BLACK, fontSize: 20 }}>{busStop.name}</Text>
+        <Text style={{ color: NEWCOLOR.GRAY_1_GRAY_4, fontSize: 14, marginBottom: 16 }}>
+          {busStop.directionDescription}
+        </Text>
         <BookmarkButton
+          NEWCOLOR={NEWCOLOR}
           size={25}
           isBookmarked={busStop.isBookmarked}
           onPress={() => {}}
-          style={{ borderWidth: 0.3, borderColor: COLOR.GRAY_1, padding: 5, borderRadius: '100%' }}
+          style={{ borderWidth: 0.3, borderColor: NEWCOLOR.GRAY_1_GRAY_4, padding: 5, borderRadius: '100%' }}
         />
+        <Switch value={isDark} onValueChange={(v) => toggleIsDark()} />
       </View>
     );
   };
@@ -45,14 +66,14 @@ export default function App() {
         style={{
           paddingHorizontal: 13,
           paddingVertical: 3,
-          backgroundColor: COLOR.GRAY_1,
+          backgroundColor: NEWCOLOR.GRAY_1_GRAY_4,
           borderTopWidth: 0.5,
           borderBottomWidth: 0.5,
-          borderTopColor: COLOR.GRAY_2,
-          borderBottomColor: COLOR.GRAY_2,
+          borderTopColor: NEWCOLOR.GRAY_2_GRAY_3,
+          borderBottomColor: NEWCOLOR.GRAY_2_GRAY_3,
         }}
       >
-        <Text style={{ fontSize: 12, color: COLOR.GRAY_4 }}>{title}</Text>
+        <Text style={{ fontSize: 12, color: NEWCOLOR.GRAY_4_GRAY_1 }}>{title}</Text>
       </View>
     );
   };
@@ -80,6 +101,7 @@ export default function App() {
     });
     return (
       <BusInfo
+        NEWCOLOR={NEWCOLOR}
         isBookmarked={bus.isBookmarked}
         onPress={() => {}}
         num={bus.num}
@@ -92,7 +114,7 @@ export default function App() {
 
   // 리스트 구분선
   const ItemSeparatorComponent = () => {
-    return <View style={{ width: '100%', height: 1, backgroundColor: COLOR.GRAY_1 }} />;
+    return <View style={{ width: '100%', height: 1, backgroundColor: NEWCOLOR.GRAY_1_GRAY_2 }} />;
   };
 
   // 리스트 하단
@@ -124,12 +146,20 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style={{ backgroundColor: COLOR.GRAY_3, width: '100%' }}>
+      <View style={{ backgroundColor: NEWCOLOR.GRAY_3_GRAY_2, width: '100%' }}>
         <SafeAreaView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <ListHeaderIcons name="arrow-left" size={24} color={COLOR.WHITE} />
-          <ListHeaderIcons name="home" size={20} color={COLOR.WHITE} />
+          <ListHeaderIcons name="arrow-left" size={24} color={NEWCOLOR.WHITE_BLACK} />
+          <ListHeaderIcons name="home" size={20} color={NEWCOLOR.WHITE_BLACK} />
         </SafeAreaView>
-        <View style={{ position: 'absolute', width: '100%', height: 600, backgroundColor: COLOR.GRAY_3, zIndex: -1 }} />
+        <View
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: 600,
+            backgroundColor: NEWCOLOR.GRAY_3_GRAY_2,
+            zIndex: -1,
+          }}
+        />
       </View>
       <SectionList
         style={{ flex: 1, width: '100%' }}
